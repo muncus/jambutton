@@ -35,6 +35,10 @@ String DEVICE_TITLE = "IFTTT ESP8266 Dash Like Button";
 // Set POWER_SAVE when using with a p-fet to control power to the device.
 boolean POWER_SAVE = true;
 boolean RGB_LED = true;
+// These allow switching betwen common-anode and common-cathode RGB leds.
+// I have CA.
+const int RGB_LED_ON = 0;
+const int RGB_LED_OFF = 255;
 
 ///////////////////////
 // IFTTT Definitions //
@@ -113,16 +117,16 @@ void buttonPressedAction(){
   if(BUTTON_COUNTER > 1)
   {
     // Turn off the Green LED  while transmitting.
-    digitalWrite(LED_GREEN, LOW);
+    analogWrite(LED_GREEN, RGB_LED_OFF);
     if(RGB_LED == true){
-      digitalWrite(LED_BLUE, HIGH);
+      analogWrite(LED_BLUE, RGB_LED_ON);
     }
     triggerButtonEvent(IFTTT_EVENT);
     // After a successful send turn the light back to green
     if(RGB_LED == true){
-     digitalWrite(LED_BLUE, LOW);
+     analogWrite(LED_BLUE, RGB_LED_OFF);
     }
-    digitalWrite(LED_GREEN, HIGH);
+    analogWrite(LED_GREEN, RGB_LED_ON);
   }
 }
 
