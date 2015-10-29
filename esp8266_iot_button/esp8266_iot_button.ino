@@ -32,7 +32,8 @@ ESP8266WebServer WEB_SERVER(80);
 // Device Definitions //
 /////////////////////////
 String DEVICE_TITLE = "IFTTT ESP8266 Dash Like Button";
-boolean POWER_SAVE = false;
+// Set POWER_SAVE when using with a p-fet to control power to the device.
+boolean POWER_SAVE = true;
 boolean RGB_LED = true;
 
 ///////////////////////
@@ -51,6 +52,8 @@ const int LED_GREEN = 5;
 const int LED_RED = 0;
 const int LED_BLUE = 4;
 const int BUTTON_PIN = 2;
+// Used to power off the P-FET, powering off the device.
+const int KILLSWITCH = 13;
 
 //////////////////////
 // Button Variables //
@@ -86,27 +89,40 @@ void loop() {
   }
   WEB_SERVER.handleClient();
 
+  if(POWER_SAVE == true && \
+     BUTTON_COUNTER == 0 && \
+     digitalRead(BUTTON_PIN) == LOW && \
+     WiFi.status() == WL_CONNECTED ){
+
+    buttonPressedAction();
+    digitalWrite(KILLSWITCH, HIGH);
+  }
+     
   // Wait for button Presses
   boolean pressed = debounce();
   if (pressed == true) {
-    BUTTON_COUNTER++;
-    Serial.print("Trigger" + String(IFTTT_EVENT) + " Event Pressed ");
-    Serial.print(BUTTON_COUNTER);
-    Serial.println(" times");
-    if(BUTTON_COUNTER > 1)
-    {
-      // Turn off the Green LED  while transmitting.
-      digitalWrite(LED_GREEN, LOW);
-      if(RGB_LED == true){
-        digitalWrite(LED_BLUE, HIGH);
-      }
-      triggerButtonEvent(IFTTT_EVENT);
-      // After a successful send turn the light back to green
-      if(RGB_LED == true){
-       digitalWrite(LED_BLUE, LOW);
-      }
-      digitalWrite(LED_GREEN, HIGH);
+    buttonPressedAction();
+  }
+}
+
+void buttonPressedAction(){
+  BUTTON_COUNTER++;
+  Serial.print("Trigger" + String(IFTTT_EVENT) + " Event Pressed ");
+  Serial.print(BUTTON_COUNTER);
+  Serial.println(" times");
+  if(BUTTON_COUNTER > 1)
+  {
+    // Turn off the Green LED  while transmitting.
+    digitalWrite(LED_GREEN, LOW);
+    if(RGB_LED == true){
+      digitalWrite(LED_BLUE, HIGH);
     }
+    triggerButtonEvent(IFTTT_EVENT);
+    // After a successful send turn the light back to green
+    if(RGB_LED == true){
+     digitalWrite(LED_BLUE, LOW);
+    }
+    digitalWrite(LED_GREEN, HIGH);
   }
 }
 
@@ -127,6 +143,7 @@ void initHardware()
   }
   // Button
   pinMode(BUTTON_PIN, INPUT);
+  pinMode(KILLSWITCH, OUTPUT);
 
 }
 
