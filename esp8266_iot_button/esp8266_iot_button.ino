@@ -3,7 +3,7 @@
   ESP8266 Thing or Adafruit Huzzah, a standard Green LED(or onboard green LED)
   and a push button.  Optional RGB LED for more detailed status indicators
 
-  While attempting to connect to the specified SSID the LCD flashes,
+  While attempting to connect to the specified SSID the LED flashes,
   when connected the led remains green, while data is sending the led turns
   off, when done it turns back to green.
 
@@ -33,7 +33,7 @@ ESP8266WebServer WEB_SERVER(80);
 /////////////////////////
 String DEVICE_TITLE = "IFTTT ESP8266 Dash Like Button";
 boolean POWER_SAVE = false;
-boolean RGB_LCD = true;
+boolean RGB_LED = true;
 
 ///////////////////////
 // IFTTT Definitions //
@@ -47,7 +47,7 @@ const char* IFTTT_NOTIFICATION_EVENT = "YOUR_IFTTT_NOTIFICATION_EVENT";
 // Pin Definitions //
 /////////////////////
 const int LED_GREEN = 5;
-// Blue and Red LED Pins if RGB LCD is enabled
+// Blue and Red LED Pins if RGB LED is enabled
 const int LED_RED = 0;
 const int LED_BLUE = 4;
 const int BUTTON_PIN = 2;
@@ -97,12 +97,12 @@ void loop() {
     {
       // Turn off the Green LED  while transmitting.
       digitalWrite(LED_GREEN, LOW);
-      if(RGB_LCD == true){
+      if(RGB_LED == true){
         digitalWrite(LED_BLUE, HIGH);
       }
       triggerButtonEvent(IFTTT_EVENT);
       // After a successful send turn the light back to green
-      if(RGB_LCD == true){
+      if(RGB_LED == true){
        digitalWrite(LED_BLUE, LOW);
       }
       digitalWrite(LED_GREEN, HIGH);
@@ -119,7 +119,7 @@ void initHardware()
   // LEDS
   pinMode(LED_GREEN, OUTPUT);
   digitalWrite(LED_GREEN, LOW);
-  if(RGB_LCD == true){
+  if(RGB_LED == true){
     pinMode(LED_RED, OUTPUT);
     digitalWrite(LED_RED, LOW);
     pinMode(LED_BLUE, OUTPUT);
