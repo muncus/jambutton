@@ -87,6 +87,10 @@ void setup() {
 
 void loop() {
 
+  if(digitalRead(BUTTON_PIN) == LOW){
+    SETUP_MODE = true;
+  }
+
   // Handle WiFi Setup and Webserver for reset page
   if (SETUP_MODE) {
     DNS_SERVER.processNextRequest();
@@ -95,11 +99,13 @@ void loop() {
 
   if(POWER_SAVE == true && \
      BUTTON_COUNTER == 0 && \
-     digitalRead(BUTTON_PIN) == LOW && \
      WiFi.status() == WL_CONNECTED ){
 
     buttonPressedAction();
-    digitalWrite(KILLSWITCH, HIGH);
+    // If we are in setup mode, don't turn on the kill switch.
+    if(!SETUP_MODE){
+      digitalWrite(KILLSWITCH, HIGH);
+    }
   }
      
   // Wait for button Presses
