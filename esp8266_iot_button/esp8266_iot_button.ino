@@ -71,6 +71,13 @@ int BUTTON_COUNTER = 0;
 void setup() {
 
   initHardware();
+
+  // shortcut into setup mode.
+  if(digitalRead(BUTTON_PIN) == LOW){
+    SETUP_MODE = true;
+    setupMode();
+    return;
+  }
   // Try and restore saved settings
   if (loadSavedConfig()) {
     if (checkWiFiConnection()) {
@@ -86,10 +93,6 @@ void setup() {
 }
 
 void loop() {
-
-  if(digitalRead(BUTTON_PIN) == LOW){
-    SETUP_MODE = true;
-  }
 
   // Handle WiFi Setup and Webserver for reset page
   if (SETUP_MODE) {
